@@ -6,18 +6,6 @@
 
 #IncludeRegexTransform: 
 
-../include/shader.h
-glad/glad.h
--
-fstream
--
-iostream
--
-sstream
--
-string
--
-
 ../libraries/glad/include/KHR/khrplatform.h
 stdint.h
 -
@@ -891,9 +879,9 @@ detail/func_vector_relational.hpp
 ../libraries/glm/glm/detail/func_vector_relational.hpp
 
 /home/shirdi/spring22/cg/assign1/src/main.cpp
-GLFW/glfw3.h
--
 glad/glad.h
+-
+GLFW/glfw3.h
 -
 glm/glm.hpp
 -
@@ -905,4 +893,16 @@ iostream
 -
 shader.h
 /home/shirdi/spring22/cg/assign1/src/shader.h
+
+/home/shirdi/spring22/cg/assign1/src/shader.h
+glad/glad.h
+-
+fstream
+-
+iostream
+-
+sstream
+-
+string
+-
 
