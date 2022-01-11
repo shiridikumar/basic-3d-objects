@@ -893,6 +893,8 @@ iostream
 -
 shader.h
 /home/shirdi/spring22/cg/assign1/src/shader.h
+bits/stdc++.h
+-
 
 /home/shirdi/spring22/cg/assign1/src/shader.h
 glad/glad.h
