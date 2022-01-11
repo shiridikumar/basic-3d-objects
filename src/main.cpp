@@ -103,14 +103,14 @@ int main(int rgc ,char *argv[])
 	//glm::mat4 myMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	int sides=atoi(argv[1]);
 	float vertices[2*3*(sides+1)];
-	vertices[0]=0;vertices[1]=0;vertices[2]=0 ;//;vertices[3]=1;
-	vertices[4]=1;vertices[5]=0;vertices[6]=0 ;//;vertices[7]=1;
+	vertices[0]=0.0f;vertices[1]=0.0f;vertices[2]=-0.5f ;//;vertices[3]=1;
+	vertices[3]=0.5f;vertices[4]=0.0f;vertices[5]=-0.5f ;//;vertices[7]=1;
 	float vertices_bottom[3*(sides+1)];
-    cout<<"(0,0,0)"<<endl<<"(1,0,0)"<<endl;
+    cout<<"(0,0,0)"<<endl<<"(-1,0,0)"<<endl;
 
 	int coun=6;
     glm::mat4 myMatrix = glm::mat4(1.0f);
-    glm::vec4 myVector(1.0f,0.0f,0.0f,0.0f);
+    glm::vec4 myVector(0.5f,0.0f,-0.5f,0.0f);
 	myMatrix = glm::rotate(myMatrix,  glm::radians((float)360/sides), glm::vec3(0.0f, 0.0f, 1.0f));
 	for (int i = 1; i < sides; i++)
 	{
@@ -144,8 +144,8 @@ int main(int rgc ,char *argv[])
 			vertices[ind++]=pSource1[j];
 			cout<<pSource1[j]<<",";
 		}
-		// cout<<")";
-        // cout<<"       "<<"("<<x<<" ,"<<y<<" ,"<<z<<")"<<endl;
+		 //cout<<")";
+        //cout<<" "<<"("<<x<<" ,"<<y<<" ,"<<z<<")"<<endl;
 		cout<<endl;
 		
 	}
@@ -203,7 +203,7 @@ int main(int rgc ,char *argv[])
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3* sizeof(float),
 						  (void *)0);
 	glEnableVertexAttribArray(0);
 
@@ -225,8 +225,8 @@ int main(int rgc ,char *argv[])
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glm::mat4 transform = glm::mat4(1.0f);
-		transform = glm::rotate(transform, 1.0f * (float)glfwGetTime(),
-								glm::vec3(0.0f, 0.0f, 1.0f));
+		transform = glm::rotate(transform, glm::radians(115.0f),    //(float)glfwGetTime(),
+								glm::vec3(1.0f, 0.0f, 0.0f));
 
 		ourShader.use();
 		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
@@ -235,7 +235,7 @@ int main(int rgc ,char *argv[])
 
 		glm::mat4 model = glm::mat4(1.0f);
 		//model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, (float)glfwGetTime() * 0.1f, glm::vec3(0.5f, 1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 		glm::mat4 view = glm::mat4(1.0f);
 		// note that we're translating the scene in the reverse direction of where we want to move
