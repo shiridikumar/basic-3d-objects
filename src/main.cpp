@@ -15,22 +15,37 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
 
-int hello(){
-	float angle=360/5;
+int main()
+{
+	float start[] = {1, 0, 0};
 	glm::mat4 myMatrix = glm::mat4(1.0f);
-	myMatrix = glm::translate(myMatrix, glm::vec3(10.0f, 0.0f, 0.0f));
+	//myMatrix = glm::translate(myMatrix, glm::vec3(1.0f, 0.0f, 0.0f));
 	//glm::mat4 myMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, 0.0f));
-	glm::vec4 myVector(0.0f, 0.0f, -1.0f, 0.0f);
-	glm::vec4 transformedVector = myMatrix * myVector;
-	double dArray[4] = {0.0};
-	const float *pSource = (const float*)glm::value_ptr(transformedVector);
-	for (int i = 0; i <4; ++i){
-		cout<<pSource[i]<<" ";
+	int sides=6;
+	float vertices[4*(sides+1)];
+	vertices[0]=0;vertices[1]=0;vertices[2]=0;vertices[3]=0;
+	int coun=4;
+	for (int i = 0; i < sides; i++)
+	{
+		myMatrix = glm::mat4(1.0f);
+		myMatrix = glm::rotate(myMatrix,  (i+1)*glm::radians((float)360/sides), glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::vec4 myVector(1.0f, 0.0f, 0.0f, 0.0f);
+		glm::vec4 transformedVector = myMatrix * myVector;
+		double dArray[4] = {0.0};
+		const float *pSource = (const float *)glm::value_ptr(transformedVector);
+		//cout<<"(";
+		for (int i = 0; i < 4; ++i)
+		{
+			vertices[coun++]=pSource[i];
+			//cout << pSource[i] << ", ";
+		}
+		//cout<<")";
+		//cout << endl;
 	}
-	cout<<endl;
+
 }
 
-int main()
+/*int main()
 {
 	// glfw: initialize and configure
 	glfwInit();
@@ -60,6 +75,24 @@ int main()
 	}
 
 	Shader ourShader("../src/vertex.shader", "../src/fragment.shader");
+	float start[] = {1, 0, 0};
+	float angle = 360 / 5;
+	glm::mat4 myMatrix = glm::mat4(1.0f);
+	//myMatrix = glm::translate(myMatrix, glm::vec3(1.0f, 0.0f, 0.0f));
+	//glm::mat4 myMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, 0.0f));
+	for (int i = 0; i < 5; i++)
+	{
+		myMatrix = glm::rotate(myMatrix, (i + 1) * (float)(360 / 5) * glm::degrees(50.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::vec4 myVector(1.0f, 0.0f, 0.0f, 0.0f);
+		glm::vec4 transformedVector = myMatrix * myVector;
+		double dArray[4] = {0.0};
+		const float *pSource = (const float *)glm::value_ptr(transformedVector);
+		for (int i = 0; i < 4; ++i)
+		{
+			cout << pSource[i] << " ";
+		}
+		cout << endl;
+	}
 
 	float vertices[] = {
 		-0.5f, -0.5f, -0.5f, 0.0f,
@@ -87,21 +120,21 @@ int main()
 		0.5f, 0.5f, -0.5f, 1.0f,
 		0.5f, -0.5f, -0.5f, 0.0f,
 		0.5f, -0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.5f, 0.0f ,
-		0.5f, 0.5f, 0.5f, 1.0f ,
+		0.5f, -0.5f, 0.5f, 0.0f,
+		0.5f, 0.5f, 0.5f, 1.0f,
 
-		-0.5f, -0.5f, -0.5f, 0.0f ,
+		-0.5f, -0.5f, -0.5f, 0.0f,
 		0.5f, -0.5f, -0.5f, 1.0f,
-		0.5f, -0.5f, 0.5f, 1.0f, 
-		0.5f, -0.5f, 0.5f, 1.0f, 
-		-0.5f, -0.5f, 0.5f, 0.0f, 
-		-0.5f, -0.5f, -0.5f, 0.0f, 
+		0.5f, -0.5f, 0.5f, 1.0f,
+		0.5f, -0.5f, 0.5f, 1.0f,
+		-0.5f, -0.5f, 0.5f, 0.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f,
 
-		-0.5f, 0.5f, -0.5f, 0.0f, 
-		0.5f, 0.5f, -0.5f, 1.0f, 
-		0.5f, 0.5f, 0.5f, 1.0f, 
-		0.5f, 0.5f, 0.5f, 1.0f, 
-		-0.5f, 0.5f, 0.5f, 0.0f, 
+		-0.5f, 0.5f, -0.5f, 0.0f,
+		0.5f, 0.5f, -0.5f, 1.0f,
+		0.5f, 0.5f, 0.5f, 1.0f,
+		0.5f, 0.5f, 0.5f, 1.0f,
+		-0.5f, 0.5f, 0.5f, 0.0f,
 		-0.5f, 0.5f, -0.5f, 0.0f};
 
 	unsigned int indices[] = {
@@ -121,13 +154,13 @@ int main()
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBO);
 	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4* sizeof(float),
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
 						  (void *)0);
 	glEnableVertexAttribArray(0);
 
-	/*glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5* sizeof(float),
-						  (void *)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);*/
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5* sizeof(float),
+	//					  (void *)(3 * sizeof(float)));
+	//glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBO);
 	glBindVertexArray(0);
@@ -175,9 +208,9 @@ int main()
 
 	glfwTerminate();
 	return 0;
-}
+}*/
 
-void processInput(GLFWwindow *window)
+/*void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
@@ -186,4 +219,4 @@ void processInput(GLFWwindow *window)
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
 	glViewport(0, 0, width, height);
-}
+}*/
