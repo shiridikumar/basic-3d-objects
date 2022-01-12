@@ -102,13 +102,18 @@ int main(int rgc ,char *argv[])
 	//----------------------------------------vertices top------------------------------------------------------------------------------
 	//glm::mat4 myMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	int sides=atoi(argv[1]);
-	float vertices[2*3*(sides+1)];
-	vertices[0]=0.0f;vertices[1]=0.0f;vertices[2]=-0.5f ;//;vertices[3]=1;
-	vertices[3]=0.5f;vertices[4]=0.0f;vertices[5]=-0.5f ;//;vertices[7]=1;
+	float vertices[2*(3+4)*(sides+1)];
+	double cp=1.0f/(2+sides+1);
+	double ini=cp;
+	float r=cp,g=cp,b=cp,alpha=0.0f;
+	vertices[0]=0.5f;vertices[1]=0.0f;vertices[2]=-0.5f ;vertices[3]=ini;vertices[4]=ini;vertices[5]=ini;vertices[6]=alpha;//;vertices[3]=1;
+	ini+=cp;
+	vertices[7]=0.5f;vertices[8]=0.0f;vertices[9]=-0.5f ;vertices[10]=ini;vertices[11]=ini;vertices[12]=ini;vertices[13]=alpha;//;vertices[7]=1;
+	ini+=cp;
 	float vertices_bottom[3*(sides+1)];
     cout<<"(0,0,0)"<<endl<<"(-1,0,0)"<<endl;
 
-	int coun=6;
+	int coun=14;
     glm::mat4 myMatrix = glm::mat4(1.0f);
     glm::vec4 myVector(0.5f,0.0f,-0.5f,0.0f);
 	myMatrix = glm::rotate(myMatrix,  glm::radians((float)360/sides), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -118,11 +123,17 @@ int main(int rgc ,char *argv[])
 		double dArray[4] = {0.0};
 		const float *pSource = (const float *)glm::value_ptr(myVector);
 		cout<<"(";
+		float x=pSource[0],y=pSource[1],z=pSource[2];
 		for (int j = 0; j < 3; ++j)
 		{
 			vertices[coun++]=pSource[j];
 			cout << pSource[j] << ", ";
 		}
+			vertices[coun++]=x;
+			vertices[coun++]=y;
+			vertices[coun++]=z;
+			vertices[coun++]=alpha;
+			ini+=cp;
 		cout<<")";
         cout<<endl;
 	}
@@ -130,10 +141,11 @@ int main(int rgc ,char *argv[])
     cout<<"-----------------------"<<endl<<endl;
     
     cout<<endl;
+	cout<<coun<<"*****************"<<endl;
 	glm::mat4 transMatrix = glm::mat4(1.0f);
 	transMatrix = glm::translate(transMatrix, glm::vec3(0.0f, 0.0f, 1.0f));
     int ind=coun;
-	for(int i=0;i<(sides+1)*3;i+=3){
+	for(int i=0;i<(sides+1)*7;i+=7){
 		float x=vertices[i],y=vertices[i+1],z=vertices[i+2],w=1.0f;
 		glm::vec4 oldvec(x,y,z,w);
 		glm::vec4 newvec=transMatrix*oldvec;
@@ -142,10 +154,16 @@ int main(int rgc ,char *argv[])
 		for (int j = 0; j < 3; ++j)
 		{
 			vertices[ind++]=pSource1[j];
+
 			cout<<pSource1[j]<<",";
 		}
-		 //cout<<")";
-        //cout<<" "<<"("<<x<<" ,"<<y<<" ,"<<z<<")"<<endl;
+			vertices[ind++]=x;
+			vertices[ind++]=y;
+			vertices[ind++]=z;
+			ini+=cp;
+			vertices[ind++]=alpha;
+		 cout<<")";
+        cout<<" "<<"("<<x<<" ,"<<y<<" ,"<<z<<")"<<endl;
 		cout<<endl;
 		
 	}
@@ -217,8 +235,30 @@ int main(int rgc ,char *argv[])
 		cout<<indices[i]<<", ";
 	}
 	cout<<endl;
-
 	
+	cout<<endl;
+	for(int i=0;i<2*(3+4)*(sides+1);i+=7){
+		cout<<vertices[i]<<" ,"<<vertices[i+1]<<" ,"<<vertices[i+2]<<endl;
+
+	}
+	cout<<endl;
+
+	// int pad2=7*(sides+1)+14;
+	// int colp=0;
+
+	// for(int i=0;i<sides-1;i++){
+	// 	cout<<vertices[colp+pad2+4]<<" "<<vertices[colp+4+7]<<endl;
+	// 	vertices[colp+pad2+4]=vertices[colp+4+7];
+	// 	vertices[colp+pad2+5]=vertices[colp+5+7];
+	// 	cout<<vertices[colp+pad2+5]<<" "<<vertices[colp+5+7]<<endl;
+	// 	vertices[colp+pad2+6]=vertices[colp+6+7];
+	// 	cout<<vertices[colp+pad2+6]<<" "<<vertices[colp+6+7]<<endl;
+	// 	colp+=7;
+	// }
+	// vertices[pad2-7+4]=vertices[colp+4+7];
+	// vertices[pad2-7+5]=vertices[colp+5+7];
+	// vertices[pad2-7+6]=vertices[colp+6+7];
+
 
 	unsigned int EBO, VAO, VBO, VAO2, VBO2, EBO2, *VAOs;
 	glGenVertexArrays(1, &VAO);
@@ -233,13 +273,13 @@ int main(int rgc ,char *argv[])
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3* sizeof(float),
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7* sizeof(float),
 						  (void *)0);
 	glEnableVertexAttribArray(0);
 
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5* sizeof(float),
-	//					  (void *)(3 * sizeof(float)));
-	//glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7* sizeof(float),
+					  (void *)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -290,6 +330,7 @@ int main(int rgc ,char *argv[])
 	glfwTerminate();
 	return 0;
 }
+
 
 
 void processInput(GLFWwindow *window)

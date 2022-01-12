@@ -12,6 +12,6 @@ uniform mat4 transform;
 void main()
 {
 	
-	gl_Position = (model)*(transform*vec4(aPos, 1.0));
+	gl_Position = (model)*transform*vec4(aPos, 1.0);
 	ourCol = aCol;
 }
