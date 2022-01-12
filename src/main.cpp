@@ -150,7 +150,7 @@ int main(int rgc ,char *argv[])
 		
 	}
     cout<<"*******************"<<endl;
-	unsigned int indices[2*3*sides];
+	unsigned int indices[2*3*sides +6*sides];
 	 coun=0;
 	int count =1;
 	for(int i=0;i<sides;i++){
@@ -188,7 +188,37 @@ int main(int rgc ,char *argv[])
         cout<<indices[i]<<" ,";
     }
     cout<<endl;
+	int top_p=1;
+	int bottom_p=pad+1;
+	for(int i=0;i<sides;i++){
+		indices[coun]=top_p;coun++;
+		indices[coun]=bottom_p;coun++;
+		indices[coun]=bottom_p+1;coun++;
+		top_p++;bottom_p++;
+	}
+	indices[coun-1]=pad+1;
 
+	top_p=1;
+	bottom_p=pad+1;
+	for(int i=0;i<sides;i++){
+		indices[coun]=bottom_p+1;coun++;
+		indices[coun]=top_p;coun++;
+		indices[coun]=top_p+1;coun++;
+		top_p++;
+		bottom_p++;
+	}
+	cout<<"*********"<<endl;
+	indices[coun-1]=1;
+	indices[coun-3]=pad+1;
+	for(int i=0;i<coun;i++){
+		if(i%3==0){
+			cout<<endl;
+		}
+		cout<<indices[i]<<", ";
+	}
+	cout<<endl;
+
+	
 
 	unsigned int EBO, VAO, VBO, VAO2, VBO2, EBO2, *VAOs;
 	glGenVertexArrays(1, &VAO);
@@ -233,24 +263,25 @@ int main(int rgc ,char *argv[])
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE,
 						   glm::value_ptr(transform));
 
-		glm::mat4 model = glm::mat4(1.0f);
-		//model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		 glm::mat4 model = glm::mat4(1.0f);
 
-		glm::mat4 view = glm::mat4(1.0f);
-		// note that we're translating the scene in the reverse direction of where we want to move
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-		glm::mat4 projection;
-		 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 10.0f);
-		int modelLoc = glGetUniformLocation(ourShader.ID, "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		int modelLoc2 = glGetUniformLocation(ourShader.ID, "view");
-		glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, glm::value_ptr(view));
-		int modelLoc3 = glGetUniformLocation(ourShader.ID, "projection");
-		 glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(projection));
+		 //model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, (float)glfwGetTime()*1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+		// glm::mat4 view = glm::mat4(1.0f);
+		// // note that we're translating the scene in the reverse direction of where we want to move
+		// view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+		// glm::mat4 projection;
+		//  projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 10.0f);
+		 int modelLoc = glGetUniformLocation(ourShader.ID, "model");
+		 glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		// int modelLoc2 = glGetUniformLocation(ourShader.ID, "view");
+		// glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, glm::value_ptr(view));
+		// int modelLoc3 = glGetUniformLocation(ourShader.ID, "projection");
+		//  glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(projection));
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES,6*sides, GL_UNSIGNED_INT,0 );
+		glDrawElements(GL_TRIANGLES,6*sides+6*sides, GL_UNSIGNED_INT,0 );
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
