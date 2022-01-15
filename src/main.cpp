@@ -16,55 +16,7 @@ void processInput(GLFWwindow *window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
-// int main(){
-// 	float start[] = {1, 0, 0};
 
-// 	glm::mat4 myMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, 0.0f));
-// 	int sides=8;
-// 	float vertices[4*(sides+1)];
-// 	vertices[0]=0;vertices[1]=0;vertices[2]=0;vertices[3]=0;
-// 	vertices[4]=1;vertices[5]=0;vertices[6]=0;vertices[7]=0;
-// 	float vertices_bottom[4*(sides+1)];
-
-	
-
-// 	int coun=8;
-// 	for (int i = 1; i < sides; i++)
-// 	{
-// 		myMatrix = glm::mat4(1.0f);
-// 		myMatrix = glm::rotate(myMatrix,  (i)*glm::radians((float)360/sides), glm::vec3(0.0f, 0.0f, 1.0f));
-// 		glm::vec4 myVector(1.0f, 0.0f, 0.0f, 0.0f);
-// 		glm::vec4 transformedVector = myMatrix * myVector;
-// 		double dArray[4] = {0.0};
-// 		const float *pSource = (const float *)glm::value_ptr(transformedVector);
-// 		cout<<"(";
-// 		for (int j = 0; j < 4; ++j)
-// 		{
-// 			vertices[coun++]=pSource[j];
-// 			//cout << pSource[j] << ", ";
-// 		}
-// 		//cout<<")";
-// 	}
-// 	glm::mat4 transMatrix = glm::mat4(1.0f);
-// 	transMatrix = glm::translate(transMatrix, glm::vec3(0.0f, 0.0f, 0.5f));
-//     int ind=0;
-// 	for(int i=0;i<sides*4;i+=4){
-// 		float x=vertices[i],y=vertices[i+1],z=vertices[i+2],w=1.0f;
-// 		glm::vec4 oldvec(x,y,z,w);
-// 		glm::vec4 newvec=transMatrix*oldvec;
-// 		const float *pSource1 = (const float *)glm::value_ptr(newvec);
-// 		//cout<<"(";
-// 		for (int j = 0; j < 4; ++j)
-// 		{
-// 			vertices_bottom[ind++]=pSource1[j];
-// 			//cout<<pSource1[j]<<",";
-// 		}
-// 		//cout<<")";
-// 		cout<<endl;
-		
-// 	}
-
-// }
 
 
 
@@ -108,12 +60,11 @@ int main(int rgc ,char *argv[])
 	double cp=1.0f/(sides);
 	double ini=cp;
 	float r=cp,g=cp,b=cp,alpha=1.0f;
-	vertices[0]=0.5f;vertices[1]=0.0f;vertices[2]=-0.5f ;vertices[3]=0;vertices[4]=0;vertices[5]=0;//;vertices[3]=1;
+	vertices[0]=0.0f;vertices[1]=0.0f;vertices[2]=-0.5f ;vertices[3]=0;vertices[4]=0;vertices[5]=0;//;vertices[3]=1;
 	ini+=cp;
 	vertices[6]=0.5f;vertices[7]=0.0f;vertices[8]=-0.5f ;vertices[9]=0;vertices[10]=0;vertices[11]=1;//;vertices[7]=1;
 	ini+=cp;
 	float vertices_bottom[3*(sides+1)];
-
 	int coun=12;
     glm::mat4 myMatrix = glm::mat4(1.0f);
     glm::vec4 myVector(0.5f,0.0f,-0.5f,0.0f);
@@ -240,40 +191,118 @@ int main(int rgc ,char *argv[])
 	
 	cout<<endl;
 	for(int i=0;i<2*(3+3)*(sides+1);i+=6){
-		cout<<vertices[i+3]<<" ,"<<vertices[i+4]<<" ,"<<vertices[i+5]<<endl;
+		cout<<vertices[i]<<" ,"<<vertices[i+1]<<" ,"<<vertices[i+2]<<endl;
 
 	}
 	cout<<endl;
+	vector<float> v;
+	int low=0;int high=+1;
+	int i=0;
+	cout<<endl;
+	float a=0.0f,c=1.0f;
+	b=0.0f;
+	for(i=1;i<(sides);i+=1){
+		v.push_back(vertices[0]);v.push_back(vertices[1]);v.push_back(vertices[2])   ;v.push_back(a);v.push_back(b);v.push_back(c);
+		v.push_back(vertices[i*6]);v.push_back(vertices[i*6+1]);v.push_back(vertices[i*6+2]);v.push_back(a);v.push_back(b);v.push_back(c);
+		v.push_back(vertices[(i+1)*6]);v.push_back(vertices[(i+1)*6+1]);v.push_back(vertices[(i+1)*6+2]);v.push_back(a);v.push_back(b);v.push_back(c);
+	}
+	v.push_back(vertices[0]);v.push_back(vertices[1]);v.push_back(vertices[2]);v.push_back(a);v.push_back(b);v.push_back(c);
+	v.push_back(vertices[i*6]);v.push_back(vertices[i*6+1]);v.push_back(vertices[i*6+2]);v.push_back(a);v.push_back(b);v.push_back(c);
+	v.push_back(vertices[1*6]);v.push_back(vertices[(1)*6+1]);v.push_back(vertices[(1)*6+2]);v.push_back(a);v.push_back(b);v.push_back(c);
+	cout<<"*****************"<<v.size()<<endl;
+	for(int i=0;i<v.size();i++){
+		if(i%3==0){
+			cout<<endl;
+		}
+		cout<<v[i]<<" ";
+	}
+	cout<<endl;
+	int pad2=6*(sides+1);
+	
+	for(i=1;i<(sides);i+=1){
+		v.push_back(vertices[0+pad2]);v.push_back(vertices[1+pad2]);v.push_back(vertices[2+pad2]);v.push_back(a);v.push_back(b);v.push_back(c);
+		v.push_back(vertices[i*6+pad2]);v.push_back(vertices[i*6+1+pad2]);v.push_back(vertices[i*6+2+pad2]);v.push_back(a);v.push_back(b);v.push_back(c);
+		v.push_back(vertices[(i+1)*6+pad2]);v.push_back(vertices[(i+1)*6+1+pad2]);v.push_back(vertices[(i+1)*6+2+pad2]);v.push_back(a);v.push_back(b);v.push_back(c);
+	}
+	v.push_back(vertices[0+pad2]);v.push_back(vertices[1+pad2]);v.push_back(vertices[2+pad2]);v.push_back(a);v.push_back(b);v.push_back(c);
+	v.push_back(vertices[i*6+pad2]);v.push_back(vertices[i*6+1+pad2]);v.push_back(vertices[i*6+2+pad2]);v.push_back(a);v.push_back(b);v.push_back(c);
+	v.push_back(vertices[1*6+pad2]);v.push_back(vertices[(1)*6+1+pad2]);v.push_back(vertices[(1)*6+2+pad2]);v.push_back(a);v.push_back(b);v.push_back(c);
 
-	// int pad2=7*(sides+1)+14;
-	// int colp=0;
+	
 
-	// for(int i=0;i<sides-1;i++){
-	// 	cout<<vertices[colp+pad2+4]<<" "<<vertices[colp+4+7]<<endl;
-	// 	vertices[colp+pad2+4]=vertices[colp+4+7];
-	// 	vertices[colp+pad2+5]=vertices[colp+5+7];
-	// 	cout<<vertices[colp+pad2+5]<<" "<<vertices[colp+5+7]<<endl;
-	// 	vertices[colp+pad2+6]=vertices[colp+6+7];
-	// 	cout<<vertices[colp+pad2+6]<<" "<<vertices[colp+6+7]<<endl;
-	// 	colp+=7;
-	// }
-	// vertices[pad2-7+4]=vertices[colp+4+7];
-	// vertices[pad2-7+5]=vertices[colp+5+7];
-	// vertices[pad2-7+6]=vertices[colp+6+7];
+	
+	for(i=1;i<sides;i++){
+		if(i%2==0){
+			a=1.0f,b=0.0f,c=0.0f;
+		}
+		else{
+			a=0.0f,b=1.0f,c=0.0f;
+		}
+		v.push_back(vertices[i*6]);v.push_back(vertices[i*6+1]);v.push_back(vertices[i*6+2]);v.push_back(a);v.push_back(b);v.push_back(c);
+		v.push_back(vertices[i*6+pad2]);v.push_back(vertices[i*6+1+pad2]);v.push_back(vertices[i*6+2+pad2]);v.push_back(a);v.push_back(b);v.push_back(c);
+		v.push_back(vertices[(i+1)*6+pad2]);v.push_back(vertices[(i+1)*6+1+pad2]);v.push_back(vertices[(i+1)*6+2+pad2]);v.push_back(a);v.push_back(b);v.push_back(c);
+	}
+	if(i%2==0){
+		a=1.0f,b=0.0f,c=0.0f;
+	}
+	else{
+		a=1.0f,b=1.0f,c=0.0f;
+	}
+	v.push_back(vertices[i*6]);v.push_back(vertices[i*6+1]);v.push_back(vertices[2+i*6]);v.push_back(a);v.push_back(b);v.push_back(c);
+	v.push_back(vertices[i*6+pad2]);v.push_back(vertices[i*6+1+pad2]);v.push_back(vertices[i*6+2+pad2]);v.push_back(a);v.push_back(b);v.push_back(c);
+	v.push_back(vertices[1*6+pad2]);v.push_back(vertices[(1)*6+1+pad2]);v.push_back(vertices[(1)*6+2+pad2]);v.push_back(a);v.push_back(b);v.push_back(c);
 
 
+
+	for(i=1;i<sides;i++){
+		if(i%2==0){
+			a=1.0f,b=0.0f,c=0.0f;
+		}
+		else{
+			a=0.0f,b=1.0f,c=0.0f;
+		}
+		v.push_back(vertices[(i+1)*6+pad2]);v.push_back(vertices[(i+1)*6+1+pad2]);v.push_back(vertices[(i+1)*6+2+pad2]);v.push_back(a);v.push_back(b);v.push_back(c);
+		v.push_back(vertices[i*6]);v.push_back(vertices[i*6+1]);v.push_back(vertices[i*6+2]);v.push_back(a);v.push_back(b);v.push_back(c);
+		v.push_back(vertices[(i+1)*6]);v.push_back(vertices[(i+1)*6+1]);v.push_back(vertices[(i+1)*6+2]);v.push_back(a);v.push_back(b);v.push_back(c);
+	}
+	if(i%2==0){
+		a=1.0f,b=0.0f,c=0.0f;
+	}
+	else{
+		a=1.0f,b=1.0f,c=0.0f;
+	}
+	v.push_back(vertices[(1)*6+pad2]);v.push_back(vertices[(1)*6+1+pad2]);v.push_back(vertices[2+(1)*6+pad2]);v.push_back(a);v.push_back(b);v.push_back(c);
+	v.push_back(vertices[i*6]);v.push_back(vertices[i*6+1]);v.push_back(vertices[i*6+2]);v.push_back(a);v.push_back(b);v.push_back(c);
+	v.push_back(vertices[1*6]);v.push_back(vertices[(1)*6+1]);v.push_back(vertices[(1)*6+2]);v.push_back(a);v.push_back(b);v.push_back(c);
+
+
+
+
+
+
+
+
+
+
+	float vert[36*sides*2];
+	cout<<"*****************"<<v.size()<<endl;
+	for(int i=0;i<v.size();i++){
+		vert[i]=v[i];
+		
+	}
+	cout<<endl;
 	unsigned int EBO, VAO, VBO, VAO2, VBO2, EBO2, *VAOs;
 	glGenVertexArrays(1, &VAO);
 
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	//glGenBuffers(1, &EBO);
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vert), vert, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	// glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6* sizeof(float),
 						  (void *)0);
@@ -283,7 +312,7 @@ int main(int rgc ,char *argv[])
 					  (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBindVertexArray(0);
 
@@ -299,7 +328,7 @@ int main(int rgc ,char *argv[])
 		glEnable(GL_DEPTH_TEST);
 
 		glm::mat4 transform = glm::mat4(1.0f);
-		transform = glm::rotate(transform, glm::radians(115.0f),    //(float)glfwGetTime(),
+		transform = glm::rotate(transform, glm::radians(-115.0f),    //(float)glfwGetTime(),
 								glm::vec3(1.0f, 0.0f, 0.0f));
 
 		ourShader.use();
@@ -325,7 +354,7 @@ int main(int rgc ,char *argv[])
 		//  glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(projection));
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES,6*sides+6*sides, GL_UNSIGNED_INT,0 );
+		glDrawArrays(GL_TRIANGLES,0,36*sides );
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
