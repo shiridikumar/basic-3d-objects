@@ -6,6 +6,8 @@
 #include <iostream>
 #include "shader.h"
 #include <bits/stdc++.h>
+#include <stdlib.h>
+#include <GL/glut.h>
 using namespace std;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -102,18 +104,17 @@ int main(int rgc ,char *argv[])
 	//----------------------------------------vertices top------------------------------------------------------------------------------
 	//glm::mat4 myMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	int sides=atoi(argv[1]);
-	float vertices[2*(3+4)*(sides+1)];
-	double cp=1.0f/(2+sides+1);
+	float vertices[2*(3+3)*(sides+1)];
+	double cp=1.0f/(sides);
 	double ini=cp;
-	float r=cp,g=cp,b=cp,alpha=0.0f;
-	vertices[0]=0.5f;vertices[1]=0.0f;vertices[2]=-0.5f ;vertices[3]=ini;vertices[4]=ini;vertices[5]=ini;vertices[6]=alpha;//;vertices[3]=1;
+	float r=cp,g=cp,b=cp,alpha=1.0f;
+	vertices[0]=0.5f;vertices[1]=0.0f;vertices[2]=-0.5f ;vertices[3]=0;vertices[4]=0;vertices[5]=0;//;vertices[3]=1;
 	ini+=cp;
-	vertices[7]=0.5f;vertices[8]=0.0f;vertices[9]=-0.5f ;vertices[10]=ini;vertices[11]=ini;vertices[12]=ini;vertices[13]=alpha;//;vertices[7]=1;
+	vertices[6]=0.5f;vertices[7]=0.0f;vertices[8]=-0.5f ;vertices[9]=0;vertices[10]=0;vertices[11]=1;//;vertices[7]=1;
 	ini+=cp;
 	float vertices_bottom[3*(sides+1)];
-    cout<<"(0,0,0)"<<endl<<"(-1,0,0)"<<endl;
 
-	int coun=14;
+	int coun=12;
     glm::mat4 myMatrix = glm::mat4(1.0f);
     glm::vec4 myVector(0.5f,0.0f,-0.5f,0.0f);
 	myMatrix = glm::rotate(myMatrix,  glm::radians((float)360/sides), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -129,23 +130,23 @@ int main(int rgc ,char *argv[])
 			vertices[coun++]=pSource[j];
 			cout << pSource[j] << ", ";
 		}
-			vertices[coun++]=x;
-			vertices[coun++]=y;
-			vertices[coun++]=z;
-			vertices[coun++]=alpha;
-			ini+=cp;
+		int mul=(i%2==0)?0:1;
+		vertices[coun++]=0;
+		vertices[coun++]=mul;
+		vertices[coun++]=1-mul;
+		ini+=cp;
 		cout<<")";
         cout<<endl;
 	}
     //------------------------------vertices bottom--------------------------------------------------------------
     cout<<"-----------------------"<<endl<<endl;
     
-    cout<<endl;
-	cout<<coun<<"*****************"<<endl;
 	glm::mat4 transMatrix = glm::mat4(1.0f);
 	transMatrix = glm::translate(transMatrix, glm::vec3(0.0f, 0.0f, 1.0f));
     int ind=coun;
-	for(int i=0;i<(sides+1)*7;i+=7){
+	int l=0;
+	for(int i=0;i<(sides+1)*6;i+=6){
+		l++;
 		float x=vertices[i],y=vertices[i+1],z=vertices[i+2],w=1.0f;
 		glm::vec4 oldvec(x,y,z,w);
 		glm::vec4 newvec=transMatrix*oldvec;
@@ -157,17 +158,24 @@ int main(int rgc ,char *argv[])
 
 			cout<<pSource1[j]<<",";
 		}
-			vertices[ind++]=x;
-			vertices[ind++]=y;
-			vertices[ind++]=z;
-			ini+=cp;
-			vertices[ind++]=alpha;
-		 cout<<")";
+		int mu=(l%2==0)?1:0;
+		//cout<<mu<<"*************************"<<endl;
+		if(l==0){
+			vertices[ind++]=0;
+			vertices[ind++]=0;
+			vertices[ind++]=0;
+
+		}
+		else{
+			vertices[ind++]=0;
+			vertices[ind++]=mu;
+			vertices[ind++]=1-mu;
+		}
+		cout<<")";
         cout<<" "<<"("<<x<<" ,"<<y<<" ,"<<z<<")"<<endl;
 		cout<<endl;
 		
 	}
-    cout<<"*******************"<<endl;
 	unsigned int indices[2*3*sides +6*sides];
 	 coun=0;
 	int count =1;
@@ -198,13 +206,7 @@ int main(int rgc ,char *argv[])
         count++;coun++;
         cout<<endl;
     }
-    indices[6*sides-1]=pad+1;
-    for(int i=0;i<6*(sides);i++){
-        if(i%3==0){
-            cout<<endl;
-        }
-        cout<<indices[i]<<" ,";
-    }
+
     cout<<endl;
 	int top_p=1;
 	int bottom_p=pad+1;
@@ -237,8 +239,8 @@ int main(int rgc ,char *argv[])
 	cout<<endl;
 	
 	cout<<endl;
-	for(int i=0;i<2*(3+4)*(sides+1);i+=7){
-		cout<<vertices[i]<<" ,"<<vertices[i+1]<<" ,"<<vertices[i+2]<<endl;
+	for(int i=0;i<2*(3+3)*(sides+1);i+=6){
+		cout<<vertices[i+3]<<" ,"<<vertices[i+4]<<" ,"<<vertices[i+5]<<endl;
 
 	}
 	cout<<endl;
@@ -273,11 +275,11 @@ int main(int rgc ,char *argv[])
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7* sizeof(float),
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6* sizeof(float),
 						  (void *)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7* sizeof(float),
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6* sizeof(float),
 					  (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
@@ -291,8 +293,10 @@ int main(int rgc ,char *argv[])
 	{
 		processInput(window);
 
+		
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
 
 		glm::mat4 transform = glm::mat4(1.0f);
 		transform = glm::rotate(transform, glm::radians(115.0f),    //(float)glfwGetTime(),
