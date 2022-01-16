@@ -8,10 +8,11 @@
 #include <bits/stdc++.h>
 #include <stdlib.h>
 #include <GL/glut.h>
+#include "camera.h"
 using namespace std;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window,glm::mat4 *view);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -19,7 +20,10 @@ const unsigned int SCR_HEIGHT = 800;
 
 
 
-
+Camera camera(glm::vec3(0.0f, 0.0f,2.0f));
+	glm::vec3 pos   = glm::vec3(0.0f, 0.0f,  2.0f);
+	glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 up    = glm::vec3(0.0f, 1.0f,  0.0f);
 int main(int rgc ,char *argv[])
 {
 	//glfw: initialize and configure
@@ -210,12 +214,7 @@ int main(int rgc ,char *argv[])
 	v.push_back(vertices[i*6]);v.push_back(vertices[i*6+1]);v.push_back(vertices[i*6+2]);v.push_back(a);v.push_back(b);v.push_back(c);
 	v.push_back(vertices[1*6]);v.push_back(vertices[(1)*6+1]);v.push_back(vertices[(1)*6+2]);v.push_back(a);v.push_back(b);v.push_back(c);
 	cout<<"*****************"<<v.size()<<endl;
-	for(int i=0;i<v.size();i++){
-		if(i%3==0){
-			cout<<endl;
-		}
-		cout<<v[i]<<" ";
-	}
+
 	cout<<endl;
 	int pad2=6*(sides+1);
 	
@@ -315,12 +314,14 @@ int main(int rgc ,char *argv[])
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBindVertexArray(0);
+	
+	
 
 	//*******************************************************
 
 	while (!glfwWindowShouldClose(window))
 	{
-		processInput(window);
+
 
 		
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -328,7 +329,7 @@ int main(int rgc ,char *argv[])
 		glEnable(GL_DEPTH_TEST);
 
 		glm::mat4 transform = glm::mat4(1.0f);
-		transform = glm::rotate(transform, glm::radians(-115.0f),    //(float)glfwGetTime(),
+		transform = glm::rotate(transform, glm::radians(-90.0f),    //(float)glfwGetTime(),
 								glm::vec3(1.0f, 0.0f, 0.0f));
 
 		ourShader.use();
@@ -339,22 +340,28 @@ int main(int rgc ,char *argv[])
 		 glm::mat4 model = glm::mat4(1.0f);
 
 		 //model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, (float)glfwGetTime()*1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, (float)glfwGetTime()*0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 view = glm::mat4(1.0f);
+	// // note that we're translating the scene in the reverse direction of where we want to move
+		view = glm::lookAt(pos, pos + front, up);
 
-		// glm::mat4 view = glm::mat4(1.0f);
-		// // note that we're translating the scene in the reverse direction of where we want to move
-		// view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-		// glm::mat4 projection;
-		//  projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 10.0f);
+		
+		//projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 10.0f);
+		
+		glm::mat4 projection = glm::perspective(
+			glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT,
+			0.1f, 100.0f);
 		 int modelLoc = glGetUniformLocation(ourShader.ID, "model");
 		 glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		// int modelLoc2 = glGetUniformLocation(ourShader.ID, "view");
-		// glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, glm::value_ptr(view));
-		// int modelLoc3 = glGetUniformLocation(ourShader.ID, "projection");
-		//  glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(projection));
+		 int modelLoc2 = glGetUniformLocation(ourShader.ID, "view");
+		 glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, glm::value_ptr(view));
+		 int modelLoc3 = glGetUniformLocation(ourShader.ID, "projection");
+		  glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(projection));
+		  processInput(window,&view);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES,0,36*sides );
+		
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -366,10 +373,59 @@ int main(int rgc ,char *argv[])
 
 
 
-void processInput(GLFWwindow *window)
+void processInput(GLFWwindow *window,glm::mat4* view)
 {
+		const float c = 0.05f;
+	
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
+	if(glfwGetKey(window,GLFW_KEY_W)==GLFW_PRESS){
+		pos += c * front;
+	}
+	glm::mat4 transr=glm::mat4(1.0f);
+	glm::mat4 transx=glm::mat4(1.0f);
+	transx=glm::translate(transx,glm::vec3(-0.05f,0.0f,0.0f));
+	transr=glm::rotate(transr,glm::radians(1.0f),glm::vec3(0.0f,1.0f,0.0f));
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+		pos-=c*front;
+
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
+		pos -= glm::normalize(glm::cross(front, up)) * c;
+		//front=glm::normalize(pos);
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
+		pos += glm::normalize(glm::cross(front, up)) * c;
+		const float *p=(const float *)glm::value_ptr(pos);
+		float x=p[0];
+		float y=p[1];
+		float z=p[2];
+		cout<<x<<","<<y<<","<<z<<endl;
+		front= glm::normalize(glm::vec3(x,y,-z));
+
+		//front=glm::normalize(pos);
+	}
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
+		pos += up*c;
+		front=glm::normalize(pos);
+	}
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
+		pos-=up*c;
+		front=glm::normalize(pos);
+		
+	}
+	
+
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS){
+		pos=transr*glm::vec4(pos,1.0f);
+		front=glm::normalize(transr*glm::vec4(front,1.0f));
+	}
+
+
+
+
+		
 }
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)

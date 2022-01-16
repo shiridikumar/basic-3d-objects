@@ -6,6 +6,18 @@
 
 #IncludeRegexTransform: 
 
+../include/camera.h
+glad/glad.h
+-
+glm/glm.hpp
+-
+glm/gtc/matrix_transform.hpp
+-
+iostream
+-
+vector
+-
+
 ../libraries/glad/include/KHR/khrplatform.h
 stdint.h
 -
@@ -899,6 +911,8 @@ stdlib.h
 -
 GL/glut.h
 -
+camera.h
+/home/shirdi/spring22/cg/assign1/src/camera.h
 
 /home/shirdi/spring22/cg/assign1/src/shader.h
 glad/glad.h
