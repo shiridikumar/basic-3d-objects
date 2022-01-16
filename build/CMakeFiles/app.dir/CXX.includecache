@@ -913,6 +913,10 @@ GL/glut.h
 -
 camera.h
 /home/shirdi/spring22/cg/assign1/src/camera.h
+stdio.h
+-
+time.h
+-
 
 /home/shirdi/spring22/cg/assign1/src/shader.h
 glad/glad.h

@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <GL/glut.h>
 #include "camera.h"
+#include<stdio.h>
+#include<time.h>
 using namespace std;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -20,10 +22,11 @@ const unsigned int SCR_HEIGHT = 800;
 
 
 
-Camera camera(glm::vec3(0.0f, 0.0f,2.0f));
+//amera camera(glm::vec3(0.0f, 0.0f,2.0f));
 	glm::vec3 pos   = glm::vec3(0.0f, 0.0f,  2.0f);
 	glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 up    = glm::vec3(0.0f, 1.0f,  0.0f);
+float mx=0.0f,my=0.0f,mz=0.0f;
 int main(int rgc ,char *argv[])
 {
 	//glfw: initialize and configure
@@ -314,7 +317,7 @@ int main(int rgc ,char *argv[])
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBindVertexArray(0);
-	
+	glm::mat4 model = glm::mat4(1.0f);
 	
 
 	//*******************************************************
@@ -332,24 +335,30 @@ int main(int rgc ,char *argv[])
 		transform = glm::rotate(transform, glm::radians(-90.0f),    //(float)glfwGetTime(),
 								glm::vec3(1.0f, 0.0f, 0.0f));
 
+
+		//model = glm::rotate(model, (float)glfwGetTime()*1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	
+
 		ourShader.use();
 		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
 		glUniformMatrix4fv(transformLoc, 1, GL_FALSE,
 						   glm::value_ptr(transform));
 
-		 glm::mat4 model = glm::mat4(1.0f);
+		 
 
 		 //model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, (float)glfwGetTime()*0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 view = glm::mat4(1.0f);
+		
 	// // note that we're translating the scene in the reverse direction of where we want to move
+		glm::mat4 view = glm::mat4(1.0f);
 		view = glm::lookAt(pos, pos + front, up);
 
 		
 		//projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 10.0f);
 		
 		glm::mat4 projection = glm::perspective(
-			glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT,
+			glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT,
 			0.1f, 100.0f);
 		 int modelLoc = glGetUniformLocation(ourShader.ID, "model");
 		 glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -360,8 +369,7 @@ int main(int rgc ,char *argv[])
 		  processInput(window,&view);
 
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES,0,36*sides );
-		
+		glDrawArrays(GL_TRIANGLES,0,36*sides );		
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -375,7 +383,7 @@ int main(int rgc ,char *argv[])
 
 void processInput(GLFWwindow *window,glm::mat4* view)
 {
-		const float c = 0.05f;
+		const float c = 0.005f;
 	
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
@@ -385,14 +393,15 @@ void processInput(GLFWwindow *window,glm::mat4* view)
 	}
 	glm::mat4 transr=glm::mat4(1.0f);
 	glm::mat4 transx=glm::mat4(1.0f);
-	transx=glm::translate(transx,glm::vec3(-0.05f,0.0f,0.0f));
+	transx=glm::translate(transx,glm::vec3(0.05f,0.0f,0.0f));
 	transr=glm::rotate(transr,glm::radians(1.0f),glm::vec3(0.0f,1.0f,0.0f));
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
 		pos-=c*front;
 
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
-		pos -= glm::normalize(glm::cross(front, up)) * c;
+		pos = transx*glm::vec4(pos,1.0f);
+		front=-1.0f*glm::normalize(pos);
 		//front=glm::normalize(pos);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
@@ -401,8 +410,7 @@ void processInput(GLFWwindow *window,glm::mat4* view)
 		float x=p[0];
 		float y=p[1];
 		float z=p[2];
-		cout<<x<<","<<y<<","<<z<<endl;
-		front= glm::normalize(glm::vec3(x,y,-z));
+		front= glm::normalize(glm::vec3(0,0,-z));
 
 		//front=glm::normalize(pos);
 	}
@@ -415,12 +423,46 @@ void processInput(GLFWwindow *window,glm::mat4* view)
 		front=glm::normalize(pos);
 		
 	}
-	
+	//left
+	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS){
+		glm::vec3 ne=glm::vec3(mx,my,mz);
+		ne-= glm::normalize(glm::cross(front, up)) * c;
+		const float *ps=(const float *)glm::value_ptr(ne);
+		mx=ps[0];my=ps[1];mz=ps[2];
+		cout<<ps[0]<<"    "<<ps[1]<<"   "<<ps[2]<<endl;
 
-	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS){
+	}
+
+	//right
+	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS){
+		glm::vec3 ne=glm::vec3(mx,my,mz);
+		ne+= glm::normalize(glm::cross(front, up)) * c;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS){
 		pos=transr*glm::vec4(pos,1.0f);
 		front=glm::normalize(transr*glm::vec4(front,1.0f));
 	}
+
+	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS){
+		pos=transr*glm::vec4(pos,1.0f);
+		front=glm::normalize(transr*glm::vec4(front,1.0f));
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS){
+		pos=transr*glm::vec4(pos,1.0f);
+		front=glm::normalize(transr*glm::vec4(front,1.0f));
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS){
+		pos=transr*glm::vec4(pos,1.0f);
+		front=glm::normalize(transr*glm::vec4(front,1.0f));
+	}
+
+
+
+
+
 
 
 
