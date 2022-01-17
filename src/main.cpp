@@ -500,6 +500,7 @@ int main(int rgc, char *argv[])
 		glm::mat4 view = glm::mat4(1.0f);
 		view = glm::lookAt(pos, pos + front, up);
 
+
 		//projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 10.0f);
 
 		glm::mat4 projection = glm::perspective(
@@ -537,7 +538,13 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 	}
 	glm::mat4 transr = glm::mat4(1.0f);
 	glm::mat4 transx = glm::mat4(1.0f);
+	glm::mat4 transxl = glm::mat4(1.0f);
+	glm::mat4 transyl=glm::mat4(1.0f);
+	glm::mat4 transy=glm::mat4(1.0f);
 	transx = glm::translate(transx, glm::vec3(0.05f, 0.0f, 0.0f));
+	transxl = glm::translate(transxl, glm::vec3(-0.05f, 0.0f, 0.0f));
+	transyl = glm::translate(transyl, glm::vec3(0.0f, 0.05f, 0.0f));
+	transy = glm::translate(transy, glm::vec3(0.0f, -0.05f, 0.0f));
 	//transr = glm::rotate(transr, glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
@@ -546,36 +553,31 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		pos = transx * glm::vec4(pos, 1.0f);
-		front = -1.0f * glm::normalize(pos);
+		front = -1.0f * glm::normalize(pos-glm::vec3(mx,my,mz));
 		//front=glm::normalize(pos);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		pos += glm::normalize(glm::cross(front, up)) * c;
-		const float *p = (const float *)glm::value_ptr(pos);
-		float x = p[0];
-		float y = p[1];
-		float z = p[2];
-		front = glm::normalize(glm::vec3(0, 0, -z));
-
+		pos = transxl * glm::vec4(pos, 1.0f);
+		front = -1.0f * glm::normalize(pos-glm::vec3(mx,my,mz));
 		//front=glm::normalize(pos);
 	}
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
-		pos += up * c;
-		front = glm::normalize(pos);
+		pos = transyl*glm::vec4(pos,1.0f);
+		front = -1.0f*glm::normalize(pos-glm::vec3(mx,my,mz));
 	}
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
-		pos -= up * c;
-		front = glm::normalize(pos);
+		pos = transy*glm::vec4(pos,1.0f);
+		front = -1.0f*glm::normalize(pos-glm::vec3(mx,my,mz));
 	}
 	//left
 	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
 	{
 		glm::vec3 ne = glm::vec3(mx, my, mz);
-		ne -= glm::normalize(glm::cross(front, up)) * 0.005f;
-		const float *ps = (const float *)glm::value_ptr(ne);
+		ne -= glm::normalize(glm::cross(front, up)) * c;
+		float *ps = (float *)glm::value_ptr(ne);
 		mx = ps[0];
 		my = ps[1];
 		mz = ps[2];
@@ -587,30 +589,59 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 	{
 		glm::vec3 ne = glm::vec3(mx, my, mz);
 		ne += glm::normalize(glm::cross(front, up)) * c;
+		float *ps = (float *)glm::value_ptr(ne);
+		mx = ps[0];
+		my = ps[1];
+		mz = ps[2];
+		cout << ps[0] << "    " << ps[1] << "   " << ps[2] << endl;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
 	{
-		pos = transr * glm::vec4(pos, 1.0f);
-		front = glm::normalize(transr * glm::vec4(front, 1.0f));
+		glm::vec3 u=glm::vec3(mx,my,mz);
+		glm::vec3 ne=glm::normalize(glm::cross(front,up));
+		u-=glm::normalize(glm::cross(ne,front))*c;
+		float *ps = (float *)glm::value_ptr(u);
+		mx = ps[0];
+		my = ps[1];
+		mz = ps[2];
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
 	{
-		pos = transr * glm::vec4(pos, 1.0f);
-		front = glm::normalize(transr * glm::vec4(front, 1.0f));
+		glm::vec3 u=glm::vec3(mx,my,mz);
+		glm::vec3 ne=glm::cross(front,up);
+		u+=glm::normalize(glm::cross(ne,front))*c;
+		float *ps = (float *)glm::value_ptr(u);
+		mx = ps[0];
+		my = ps[1];
+		mz = ps[2];
+		cout<<mx<<" "<<my<<" "<<mz<<endl;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
 	{
-		pos = transr * glm::vec4(pos, 1.0f);
-		front = glm::normalize(transr * glm::vec4(front, 1.0f));
-	}
+		glm::vec3 dir=glm::normalize(front);
+		glm::vec3 u(1.0f);
+		u=glm::vec3(mx,my,mz);
+		u+=dir*c;
+		float *ps = (float *)glm::value_ptr(u);
+		mx = ps[0];
+		my = ps[1];
+		mz = ps[2];
 
+	}
 	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
 	{
-		pos = transr * glm::vec4(pos, 1.0f);
-		front = glm::normalize(transr * glm::vec4(front, 1.0f));
+		glm::vec3 dir=glm::normalize(front);
+		glm::vec3 u(1.0f);
+		u=glm::vec3(mx,my,mz);
+		u-=dir*c;
+		float *ps = (float *)glm::value_ptr(u);
+		mx = ps[0];
+		my = ps[1];
+		mz = ps[2];
+
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
