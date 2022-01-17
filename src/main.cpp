@@ -468,12 +468,12 @@ int main(int rgc, char *argv[])
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBindVertexArray(0);
-	glm::mat4 model = glm::mat4(1.0f);
 
 	//*******************************************************
 
 	while (!glfwWindowShouldClose(window))
 	{
+		glm::mat4 model = glm::mat4(1.0f);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -487,10 +487,7 @@ int main(int rgc, char *argv[])
 
 
 		model = glm::rotate(model, (spin==1.0f)?(float)glfwGetTime()*1:angle, glm::vec3(0.0f, 1.0f, 0.0f));
-
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(mx, my, mz));
-
-		
+		model = glm::translate(model, glm::vec3(mx, my, mz));
 
 		ourShader.use();
 		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
@@ -541,7 +538,7 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 	glm::mat4 transr = glm::mat4(1.0f);
 	glm::mat4 transx = glm::mat4(1.0f);
 	transx = glm::translate(transx, glm::vec3(0.05f, 0.0f, 0.0f));
-	transr = glm::rotate(transr, glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	//transr = glm::rotate(transr, glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
 		pos -= c * front;
@@ -641,7 +638,14 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 		}
 		first=(float)glfwGetTime();
 	}
+
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS){
+		pos-= glm::normalize(glm::cross(up,front))*0.01f;
+		front=(glm::normalize(pos-glm::vec3(mx,my,mz)))*-1.0f;
+	}
+
 }
+
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
