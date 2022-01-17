@@ -22,7 +22,12 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
 
 float first;
-float second;
+float second=0.0f;
+int vs=0;
+int flag=0;
+float strt;
+glm::vec3 dupf=glm::vec3(1.0f);
+glm::vec3 dupp=glm::vec3(1.0f);
 
 //amera camera(glm::vec3(0.0f, 0.0f,2.0f));
 glm::vec3 pos = glm::vec3(0.0f, 0.0f, 2.0f);
@@ -497,6 +502,13 @@ int main(int rgc, char *argv[])
 		//model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 		// // note that we're translating the scene in the reverse direction of where we want to move
+		if(vs==1){
+			pos-= glm::normalize(glm::cross(up,front))*((float)glfwGetTime()-strt)*0.005f;
+			front=(glm::normalize(pos-glm::vec3(mx,my,mz)))*((float)glfwGetTime()-strt)*(-0.005f);
+			float *po=(float *)glm::value_ptr(pos);
+			//out<<pos[0]<<"&&"<<po[1]<<"::"<<po[2]<<endl;
+
+		}
 		glm::mat4 view = glm::mat4(1.0f);
 		view = glm::lookAt(pos, pos + front, up);
 
@@ -548,33 +560,44 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 	//transr = glm::rotate(transr, glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
+		front=glm::vec3(mx,my,mz)-pos;
+		flag=0;
 		pos -= c * front;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
+		front=glm::vec3(mx,my,mz)-pos;
+		flag=0;
 		pos = transx * glm::vec4(pos, 1.0f);
 		front = -1.0f * glm::normalize(pos-glm::vec3(mx,my,mz));
 		//front=glm::normalize(pos);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
+		front=glm::vec3(mx,my,mz)-pos;
+		flag=0;
 		pos = transxl * glm::vec4(pos, 1.0f);
 		front = -1.0f * glm::normalize(pos-glm::vec3(mx,my,mz));
 		//front=glm::normalize(pos);
 	}
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
+		front=glm::vec3(mx,my,mz)-pos;
+		flag=0;
 		pos = transyl*glm::vec4(pos,1.0f);
 		front = -1.0f*glm::normalize(pos-glm::vec3(mx,my,mz));
 	}
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
+		front=glm::vec3(mx,my,mz)-pos;
+		flag=0;
 		pos = transy*glm::vec4(pos,1.0f);
 		front = -1.0f*glm::normalize(pos-glm::vec3(mx,my,mz));
 	}
 	//left
 	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
 	{
+		flag=1;
 		glm::vec3 ne = glm::vec3(mx, my, mz);
 		ne -= glm::normalize(glm::cross(front, up)) * c;
 		float *ps = (float *)glm::value_ptr(ne);
@@ -587,6 +610,7 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 	//right
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
 	{
+		flag=1;
 		glm::vec3 ne = glm::vec3(mx, my, mz);
 		ne += glm::normalize(glm::cross(front, up)) * c;
 		float *ps = (float *)glm::value_ptr(ne);
@@ -598,6 +622,7 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 
 	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
 	{
+		flag=1;
 		glm::vec3 u=glm::vec3(mx,my,mz);
 		glm::vec3 ne=glm::normalize(glm::cross(front,up));
 		u-=glm::normalize(glm::cross(ne,front))*c;
@@ -609,6 +634,7 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 
 	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
 	{
+		flag=1;
 		glm::vec3 u=glm::vec3(mx,my,mz);
 		glm::vec3 ne=glm::cross(front,up);
 		u+=glm::normalize(glm::cross(ne,front))*c;
@@ -621,6 +647,7 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 
 	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
 	{
+		flag=1;
 		glm::vec3 dir=glm::normalize(front);
 		glm::vec3 u(1.0f);
 		u=glm::vec3(mx,my,mz);
@@ -633,6 +660,7 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 	}
 	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
 	{
+		flag=1;
 		glm::vec3 dir=glm::normalize(front);
 		glm::vec3 u(1.0f);
 		u=glm::vec3(mx,my,mz);
@@ -646,12 +674,14 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 	{
+		flag=0;
 		pos = glm::vec3(0.0f, 0.0f, 2.0f);
 		front = glm::vec3(glm::normalize(glm::vec3(mx, my, mz - 2.0f)));
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 	{
+		front=glm::vec3(mx,my,mz)-pos;
 		if ((float)glfwGetTime() - first > 0.5f)
 		{
 
@@ -671,8 +701,17 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS){
-		pos-= glm::normalize(glm::cross(up,front))*0.01f;
-		front=(glm::normalize(pos-glm::vec3(mx,my,mz)))*-1.0f;
+		flag=0;
+		if((float)glfwGetTime()-second>0.5f){
+			if(vs==0){
+				vs=1;
+				strt=(float)glfwGetTime();
+			}
+			else{
+				vs=0;
+			}
+		}
+		second=(float)glfwGetTime();
 	}
 
 }
