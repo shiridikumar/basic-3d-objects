@@ -49,7 +49,7 @@ int main(int rgc, char *argv[])
 #endif
 
 	GLFWwindow *window =
-		glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Akanksha", NULL, NULL);
+		glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "shiridi", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
