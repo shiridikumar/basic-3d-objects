@@ -540,13 +540,22 @@ int main(int rgc, char *argv[])
 void processInput(GLFWwindow *window, glm::mat4 *view)
 {
 	const float c = 0.05f;
+	glm::mat4 transz=glm::mat4(1.0f);
+	transz = glm::translate(transz, glm::vec3(0.0f, 0.0f, 0.05f));
+
+	glm::mat4 transzl = glm::mat4(1.0f);
+	transzl = glm::translate(transzl, glm::vec3(0.0f, 0.0f, -0.05f));
+
 
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		pos += c * front;
+		front=glm::vec3(mx,my,mz)-pos;
+		flag=0;
+		pos = transzl*glm::vec4(pos,1.0f);
+		front = -1.0f * glm::normalize(pos-glm::vec3(mx,my,mz));
 	}
 	glm::mat4 transr = glm::mat4(1.0f);
 	glm::mat4 transx = glm::mat4(1.0f);
@@ -562,7 +571,9 @@ void processInput(GLFWwindow *window, glm::mat4 *view)
 	{
 		front=glm::vec3(mx,my,mz)-pos;
 		flag=0;
-		pos -= c * front;
+		pos = transz*glm::vec4(pos,1.0f);
+		front = -1.0f * glm::normalize(pos-glm::vec3(mx,my,mz));
+
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
